@@ -5,6 +5,7 @@ import * as bcrypt from 'bcrypt';
 export type UserDocument = User;
 
 @Schema({
+  timestamps: true,
   toJSON: {
     getters: true,
   },
@@ -19,17 +20,6 @@ export class User extends Document {
   @Prop({ required: true, unique: true })
   email: string;
 
-  @Prop({
-    get: (creditCardNumber: string) => {
-      if (!creditCardNumber) {
-        return;
-      }
-      const lastFourDigits = creditCardNumber.slice(
-        creditCardNumber.length - 4,
-      );
-      return `****-****-****-${lastFourDigits}`;
-    },
-  })
   @Prop({
     required: true,
     get: (password: string) => {
