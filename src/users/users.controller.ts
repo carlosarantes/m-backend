@@ -6,13 +6,17 @@ import {
   HttpCode,
   HttpStatus,
   Param,
+  ParseFilePipeBuilder,
   Patch,
+  UploadedFile,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-import { UpdateUserDto, UploadAvatarDto } from './dto';
+import { ApiBearerAuth, ApiBody, ApiConsumes, ApiTags } from '@nestjs/swagger';
+import { UpdateUserDto } from './dto';
 import { AuthGuard } from '@nestjs/passport';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 @ApiBearerAuth()
 @ApiTags('users')
@@ -50,10 +54,37 @@ export class UsersController {
 
   @UseGuards(AuthGuard('jwt'))
   @Patch(':id/upload-avatar')
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        file: {
+          type: 'string',
+          format: 'binary',
+        },
+      },
+    },
+  })
+  @UseInterceptors(FileInterceptor('file'))
   uploadAvatar(
     @Param('id') id: string,
-    @Body() data: UploadAvatarDto,
+    @UploadedFile(
+      new ParseFilePipeBuilder()
+        .addFileTypeValidator({
+          fileType: /[jpeg-jpg-png]/,
+        })
+        .addMaxSizeValidator({
+          maxSize: 150000,
+        })
+        .build({
+          errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY,
+        }),
+    )
+    file: Express.Multer.File,
   ): Promise<unknown> {
+    console.log('id ', id);
+    console.log('file ', file.buffer);
     return null;
     //return this.userService.update(id, data);
   }

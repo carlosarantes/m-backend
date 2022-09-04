@@ -8,6 +8,7 @@ import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import { User, UserDocument } from './schemas/user.schema';
 import { CreateUserDto, UpdateUserDto } from './dto';
+import { analyzeImage } from '../helpers/image-analyzer';
 
 @Injectable()
 export class UsersService {
@@ -36,7 +37,12 @@ export class UsersService {
   }
 
   async update(id: string, data: UpdateUserDto): Promise<unknown> {
-    return await this.userModel.updateOne({ id }, data);
+    try {
+      const user = await this.userModel.findByIdAndUpdate(id, data).exec();
+      return { ...user.toJSON(), ...data };
+    } catch (error) {
+      throw new NotFoundException('This user was not found');
+    }
   }
 
   async delete(id: string): Promise<unknown> {
@@ -51,5 +57,12 @@ export class UsersService {
 
   async findByEmail(email: string): Promise<User> {
     return await this.userModel.findOne({ email }).exec();
+  }
+
+  /**
+   * @todo - complete image analysis
+   */
+  async analyzeImage(file: Express.Multer.File): Promise<void> {
+    return await analyzeImage(file.destination);
   }
 }

@@ -5,7 +5,6 @@ import { ValidationPipe } from '@nestjs/common';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-
   const swaggerConfig = new DocumentBuilder()
     .setTitle('Miniclip avatar content management')
     .setDescription('API developed to manage Miniclip user avatars')

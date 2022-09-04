@@ -5,9 +5,13 @@ import { UsersController } from './users.controller';
 import { UsersService } from './users.service';
 
 import { User, UserSchema } from './schemas/user.schema';
+import { MulterModule } from '@nestjs/platform-express';
 
 @Module({
   imports: [
+    MulterModule.register({
+      dest: './upload',
+    }),
     MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
   ],
   controllers: [UsersController],
