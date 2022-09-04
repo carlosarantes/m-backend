@@ -6,9 +6,6 @@ export type UserDocument = User;
 
 @Schema({
   timestamps: true,
-  toJSON: {
-    getters: true,
-  },
 })
 export class User extends Document {
   @Prop({ required: true })
@@ -22,10 +19,6 @@ export class User extends Document {
 
   @Prop({
     required: true,
-    get: (password: string) => {
-      if (!password) return;
-      return '*************************';
-    },
     set: function (password: string) {
       return bcrypt.hashSync(password, 10);
     },

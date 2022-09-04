@@ -1,4 +1,8 @@
-import { ConflictException, Injectable } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 
 import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
@@ -10,7 +14,8 @@ export class UsersService {
   constructor(@InjectModel(User.name) private userModel: Model<UserDocument>) {}
 
   async store(data: CreateUserDto): Promise<unknown> {
-    const user = this.findByEmail(data.email);
+    const user = await this.findByEmail(data.email);
+
     if (!!user)
       throw new ConflictException("There's already a user with this e-mail");
 
@@ -19,11 +24,15 @@ export class UsersService {
   }
 
   async findAll(): Promise<User[]> {
-    return await this.userModel.find().exec();
+    return await this.userModel.find().select('-password').exec();
   }
 
   async findById(id: string): Promise<User> {
-    return await this.userModel.findById(id).exec();
+    try {
+      return await this.userModel.findById(id).exec();
+    } catch (error) {
+      throw new NotFoundException('This user was not found');
+    }
   }
 
   async update(id: string, data: UpdateUserDto): Promise<unknown> {
@@ -31,7 +40,13 @@ export class UsersService {
   }
 
   async delete(id: string): Promise<unknown> {
-    return await this.userModel.findByIdAndDelete(id);
+    try {
+      const user = await this.userModel.findByIdAndDelete(id).exec();
+      if (!user) throw new ConflictException('This user does not exists.');
+      return;
+    } catch (error) {
+      throw new NotFoundException('This user was not found');
+    }
   }
 
   async findByEmail(email: string): Promise<User> {
