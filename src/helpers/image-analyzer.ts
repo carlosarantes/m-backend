@@ -1,21 +1,100 @@
 import * as vision from '@google-cloud/vision';
+import { ContentLikelihood, ContentType, LikeliHoodRedflag } from '../enums';
+
 const client = new vision.ImageAnnotatorClient();
 
-const analyzeImage = async (filePath: string) => {
+type TReturn = {
+  approved: boolean;
+  gotError?: boolean;
+  requiresManualEvaluation: boolean;
+  evaluations?: {
+    [ContentType.ADULT]: number;
+    [ContentType.SPOOF]: number;
+    [ContentType.VIOLENCE]: number;
+    [ContentType.RACY]: number;
+  };
+  evaluationDetails: {
+    [ContentType.ADULT]: string;
+    [ContentType.SPOOF]: string;
+    [ContentType.VIOLENCE]: string;
+    [ContentType.RACY]: string;
+  };
+};
+
+const analyzeImage = async (filePath: string): Promise<TReturn> => {
   try {
-    // Performs safe search detection on the local file
-    const [result] = await client.safeSearchDetection(
-      './upload/1fbe9120e425bea8b65bd6c4b5226548',
-    );
+    const [result] = await client.safeSearchDetection(filePath);
 
     const detections = result.safeSearchAnnotation;
-    console.log('Safe search:');
-    console.log(`Adult: ${detections.adult}`);
-    console.log(`Medical: ${detections.medical}`);
-    console.log(`Spoof: ${detections.spoof}`);
-    console.log(`Violence: ${detections.violence}`);
-    console.log(`Racy: ${detections.racy}`);
-  } catch (error) {}
+    const evaluations = {
+      [ContentType.ADULT]: parseInt(
+        ContentLikelihood[detections.adult].toString(),
+      ),
+      [ContentType.SPOOF]: parseInt(
+        ContentLikelihood[detections.spoof].toString(),
+      ),
+      [ContentType.VIOLENCE]: parseInt(
+        ContentLikelihood[detections.violence].toString(),
+      ),
+      [ContentType.RACY]: parseInt(
+        ContentLikelihood[detections.racy].toString(),
+      ),
+    };
+
+    let approved = true;
+    let requiresManualEvaluation = false;
+    const evaluationDetails = {
+      [ContentType.ADULT]: '',
+      [ContentType.SPOOF]: '',
+      [ContentType.VIOLENCE]: '',
+      [ContentType.RACY]: '',
+    };
+
+    Object.entries(evaluations).forEach((entry) => {
+      const type = entry[0];
+      const evaluation = parseInt(entry[1].toString());
+
+      if (evaluation >= LikeliHoodRedflag[type]) {
+        approved = false;
+      }
+
+      if (evaluation > LikeliHoodRedflag[type]) {
+        requiresManualEvaluation = false;
+      }
+
+      if (evaluation == LikeliHoodRedflag[type]) {
+        requiresManualEvaluation = true;
+      }
+
+      console.log(
+        'PERCENTAGE ',
+        (evaluation * 100) / ContentLikelihood.VERY_LIKELY,
+      );
+
+      evaluationDetails[type] =
+        (evaluation * 100) / ContentLikelihood.VERY_LIKELY +
+        `% of posibility of ${type} content.`;
+    });
+
+    return {
+      approved,
+      requiresManualEvaluation,
+      evaluations,
+      evaluationDetails,
+    };
+  } catch (error) {
+    return {
+      approved: false,
+      gotError: true,
+      requiresManualEvaluation: true,
+      evaluationDetails: {
+        ADULT: 'Could not evaluate racist content due an error in library.',
+        RACY: 'Could not evaluate racist content due an error in library.',
+        SPOOF: 'Could not evaluate racist content due an error in library.',
+        VIOLENCE: 'Could not evaluate racist content due an error in library.',
+      },
+    };
+  }
 };
 
 export { analyzeImage };

@@ -17,12 +17,16 @@ import { ApiBearerAuth, ApiBody, ApiConsumes, ApiTags } from '@nestjs/swagger';
 import { UpdateUserDto } from './dto';
 import { AuthGuard } from '@nestjs/passport';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { ImageReportService } from '../image_reports/image-report.service';
 
 @ApiBearerAuth()
 @ApiTags('users')
 @Controller('v1/users')
 export class UsersController {
-  constructor(private readonly userService: UsersService) {}
+  constructor(
+    private readonly userService: UsersService,
+    private readonly imageReportService: ImageReportService,
+  ) {}
 
   @UseGuards(AuthGuard('jwt'))
   @Get()
@@ -83,9 +87,6 @@ export class UsersController {
     )
     file: Express.Multer.File,
   ): Promise<unknown> {
-    console.log('id ', id);
-    console.log('file ', file.buffer);
-    return null;
-    //return this.userService.update(id, data);
+    return this.imageReportService.analyzeImage(file);
   }
 }
