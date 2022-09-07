@@ -6,17 +6,14 @@ export type ImageReportDocument = ImageReport;
 
 @Schema()
 export class ImageReport extends Document {
-  @Prop({ type: SchemaMongoose.Types.ObjectId, ref: 'User' })
+  @Prop({ type: SchemaMongoose.Types.ObjectId, ref: 'User', required: true })
   user: User;
 
   @Prop({ required: true })
   image: string;
 
-  @Prop({ required: true })
-  status: string;
-
-  @Prop({ required: true })
-  user_evaluation_id: string;
+  @Prop({ type: SchemaMongoose.Types.ObjectId, ref: 'User', required: true })
+  user_evaluation: User;
 
   @Prop({
     type: String,
@@ -24,6 +21,18 @@ export class ImageReport extends Document {
     enum: ['MANUAL', 'AUTOMATIC'],
   })
   evaluation_method: string;
+
+  @Prop({ required: true })
+  approved: boolean;
+
+  @Prop({ required: true })
+  requiresManualEvaluation: boolean;
+
+  @Prop({ required: false })
+  evaluations?: SchemaMongoose.Types.Mixed;
+
+  @Prop({ required: true })
+  evaluationDetails: SchemaMongoose.Types.Mixed;
 }
 
 export const ImageReportSchema = SchemaFactory.createForClass(ImageReport);

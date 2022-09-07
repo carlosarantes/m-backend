@@ -8,6 +8,7 @@ import {
   Param,
   ParseFilePipeBuilder,
   Patch,
+  Req,
   UploadedFile,
   UseGuards,
   UseInterceptors,
@@ -57,7 +58,7 @@ export class UsersController {
   }
 
   @UseGuards(AuthGuard('jwt'))
-  @Patch(':id/upload-avatar')
+  @Patch(':userId/upload-avatar')
   @ApiConsumes('multipart/form-data')
   @ApiBody({
     schema: {
@@ -72,7 +73,8 @@ export class UsersController {
   })
   @UseInterceptors(FileInterceptor('file'))
   uploadAvatar(
-    @Param('id') id: string,
+    @Req() req,
+    @Param('userId') userId: string,
     @UploadedFile(
       new ParseFilePipeBuilder()
         .addFileTypeValidator({
@@ -87,6 +89,6 @@ export class UsersController {
     )
     file: Express.Multer.File,
   ): Promise<unknown> {
-    return this.imageReportService.analyzeImage(file);
+    return this.imageReportService.analyzeImage(file, userId, req.user.sub);
   }
 }

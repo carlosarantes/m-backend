@@ -66,11 +66,6 @@ const analyzeImage = async (filePath: string): Promise<TReturn> => {
         requiresManualEvaluation = true;
       }
 
-      console.log(
-        'PERCENTAGE ',
-        (evaluation * 100) / ContentLikelihood.VERY_LIKELY,
-      );
-
       evaluationDetails[type] =
         (evaluation * 100) / ContentLikelihood.VERY_LIKELY +
         `% of posibility of ${type} content.`;

@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 
 import { UsersController } from './users.controller';
@@ -19,7 +19,7 @@ import { ImageReport, ImageReportSchema } from './schemas/image_report.schema';
       { name: User.name, schema: UserSchema },
       { name: ImageReport.name, schema: ImageReportSchema },
     ]),
-    ImageReportsModule,
+    forwardRef(() => ImageReportsModule),
   ],
   controllers: [UsersController],
   providers: [UsersService, ImageReportService],
