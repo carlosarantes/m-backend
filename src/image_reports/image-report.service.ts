@@ -63,6 +63,15 @@ export class ImageReportService {
     imageReport.evaluationDetails = evaluationDetails as any;
     imageReport.requiresManualEvaluation = false;
 
+    if (approved) {
+      const userImageOwner = await this.userService.findById(
+        imageReport.user._id,
+      );
+
+      userImageOwner.current_avatar = imageReport.image;
+      await userImageOwner.save();
+    }
+
     await imageReport.save();
     return imageReport;
   }
