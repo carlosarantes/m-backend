@@ -25,7 +25,7 @@ export class User extends Document {
   })
   password: string;
 
-  @Prop({ required: true })
+  @Prop({ required: false })
   current_avatar: string;
 
   @Prop({ required: false })
