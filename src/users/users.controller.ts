@@ -30,6 +30,12 @@ export class UsersController {
   ) {}
 
   @UseGuards(AuthGuard('jwt'))
+  @Get('/profile')
+  profile(@Req() req): Promise<unknown> {
+    return this.userService.findById(req.user.sub);
+  }
+
+  @UseGuards(AuthGuard('jwt'))
   @Get()
   findAll(): Promise<unknown> {
     return this.userService.findAll();

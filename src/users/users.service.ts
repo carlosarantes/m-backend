@@ -29,7 +29,7 @@ export class UsersService {
 
   async findById(id: string): Promise<User> {
     try {
-      return await this.userModel.findById(id).exec();
+      return await this.userModel.findById(id).select('-password').exec();
     } catch (error) {
       throw new NotFoundException('This user was not found');
     }
