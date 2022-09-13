@@ -28,6 +28,9 @@ export class User extends Document {
   @Prop({ required: false })
   current_avatar: string;
 
+  @Prop({ required: false, default: true })
+  avatar_approved: boolean;
+
   @Prop({ required: false })
   role: string;
 }

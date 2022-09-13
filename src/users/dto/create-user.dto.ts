@@ -7,6 +7,7 @@ import {
   MaxLength,
   Matches,
   IsEnum,
+  IsBoolean,
 } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { UserRole } from '../../enums';
@@ -60,6 +61,15 @@ export class CreateUserDto {
   @IsString()
   @IsOptional()
   current_avatar?: string;
+
+  @ApiProperty({
+    required: false,
+    default: true,
+    description: 'Current avatar is approved?',
+  })
+  @IsBoolean()
+  @IsOptional()
+  avatar_approved?: boolean;
 
   @ApiProperty({
     required: false,

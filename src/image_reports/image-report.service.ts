@@ -98,8 +98,12 @@ export class ImageReportService {
 
     if (evaluationResult.approved) {
       userImageOwner.current_avatar = file.path;
-      await userImageOwner.save();
+      userImageOwner.avatar_approved = true;
+    } else {
+      userImageOwner.avatar_approved = false;
     }
+
+    await userImageOwner.save();
 
     return evaluationResult;
   }

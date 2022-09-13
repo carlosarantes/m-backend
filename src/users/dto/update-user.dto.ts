@@ -3,7 +3,7 @@ import {
   IsString,
   MinLength,
   MaxLength,
-  Matches,
+  IsBoolean,
 } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
@@ -35,7 +35,6 @@ export class UpdateUserDto {
   })
   @IsString()
   @IsOptional()
-  @Matches(/^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$ %^&*-]).{8,}$/)
   password?: string;
 
   @ApiProperty({
@@ -46,4 +45,13 @@ export class UpdateUserDto {
   @IsString()
   @IsOptional()
   current_avatar?: string;
+
+  @ApiProperty({
+    required: false,
+    default: true,
+    description: 'Current avatar is approved?',
+  })
+  @IsBoolean()
+  @IsOptional()
+  avatar_approved?: boolean;
 }
