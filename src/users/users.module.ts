@@ -17,7 +17,7 @@ import { diskStorage } from 'multer';
       dest: './upload',
       storage: diskStorage({
         destination: async (req, file, cb) => {
-          return cb(null, `${__dirname}/../../upload/`);
+          return cb(null, `./upload/`);
         },
         filename: (req, file, cb) => {
           const fileNameParts = file.originalname.split('.');
