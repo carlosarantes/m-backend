@@ -22,7 +22,7 @@ export class UpdateUserDto {
   @ApiProperty({
     required: false,
     description: 'Date of birthday of user to be created',
-    example: '06/06/1996',
+    example: '1996-06-06',
   })
   @IsString()
   @IsOptional()
@@ -40,7 +40,7 @@ export class UpdateUserDto {
   @ApiProperty({
     required: false,
     description: 'Current avatar of user',
-    example: 'avatar.jpg',
+    default: null,
   })
   @IsString()
   @IsOptional()

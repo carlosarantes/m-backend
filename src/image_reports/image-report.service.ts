@@ -100,11 +100,12 @@ export class ImageReportService {
     await createdReport.save();
 
     if (evaluationResult.approved) {
-      userImageOwner.current_avatar = file.path;
       userImageOwner.avatar_approved = true;
     } else {
       userImageOwner.avatar_approved = false;
     }
+
+    userImageOwner.current_avatar = file.path;
 
     await userImageOwner.save();
 

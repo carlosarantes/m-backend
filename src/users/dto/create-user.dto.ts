@@ -27,7 +27,7 @@ export class CreateUserDto {
   @ApiProperty({
     required: true,
     description: 'Date of birthday of user to be created',
-    example: '06/06/1996',
+    example: '1996-06-06',
   })
   @IsString()
   @IsNotEmpty()
@@ -56,7 +56,7 @@ export class CreateUserDto {
   @ApiProperty({
     required: false,
     description: 'Current avatar of user',
-    example: 'avatar.jpg',
+    default: null,
   })
   @IsString()
   @IsOptional()
