@@ -12,8 +12,8 @@ export class ImageReport extends Document {
   @Prop({ required: true })
   image: string;
 
-  @Prop({ type: SchemaMongoose.Types.ObjectId, ref: 'User', required: true })
-  user_evaluation: User;
+  @Prop({ type: SchemaMongoose.Types.ObjectId, ref: 'User', required: false })
+  user_evaluation?: User;
 
   @Prop({
     type: String,

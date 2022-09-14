@@ -26,12 +26,18 @@ export class ImageReportService {
   ) {}
 
   async findAll(): Promise<ImageReport[]> {
-    return await this.imageReportModel.find().exec();
+    return await this.imageReportModel
+      .find()
+      .populate(['user', 'user_evaluation'])
+      .exec();
   }
 
   async findById(id: string): Promise<ImageReport> {
     try {
-      return await this.imageReportModel.findById(id).exec();
+      return await this.imageReportModel
+        .findById(id)
+        .populate(['user', 'user_evaluation'])
+        .exec();
     } catch (error) {
       throw new NotFoundException('This report was not found');
     }
@@ -79,17 +85,14 @@ export class ImageReportService {
   async analyzeImage(
     file: Express.Multer.File,
     userImageOwnerId: string,
-    userEvaluationId: string,
   ): Promise<unknown> {
     const evaluationResult = await analyzeImage(file.path);
 
     const userImageOwner = await this.userService.findById(userImageOwnerId);
-    const userEvaluation = await this.userService.findById(userEvaluationId);
 
     const createdReport = new this.imageReportModel({
       ...evaluationResult,
       user: userImageOwner.id,
-      user_evaluation: userEvaluation.id,
       image: file.path,
       evaluation_method: 'AUTOMATIC',
     });

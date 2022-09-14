@@ -79,7 +79,6 @@ export class UsersController {
   })
   @UseInterceptors(FileInterceptor('file'))
   uploadAvatar(
-    @Req() req,
     @Param('userId') userId: string,
     @UploadedFile(
       new ParseFilePipeBuilder()
@@ -87,7 +86,7 @@ export class UsersController {
           fileType: /[jpeg-jpg-png]/,
         })
         .addMaxSizeValidator({
-          maxSize: 150000,
+          maxSize: 15000000,
         })
         .build({
           errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY,
@@ -95,6 +94,6 @@ export class UsersController {
     )
     file: Express.Multer.File,
   ): Promise<unknown> {
-    return this.imageReportService.analyzeImage(file, userId, req.user.sub);
+    return this.imageReportService.analyzeImage(file, userId);
   }
 }
